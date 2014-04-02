@@ -1,0 +1,511 @@
+#include<stdio.h>
+#include<string.h>
+
+FILE *fp,*fp1,*fp2,*fp3,*fp4,*fp5,*fp6;
+char a[100][100],garbage[100],head[100],strfinal[500];
+int o=0,ab=0,c=0,h=0,ba[100],b=0,flagsp=0,flagsp1=0;
+
+struct symtab
+{
+	char symbol[10];
+	int address;
+	int flag;
+	int frl;
+}sym[50];
+
+
+struct optab
+{
+	char opc[10];
+	char value[5];
+}op[50];
+
+
+int power(int a,int n)
+{
+	int i,b=1;
+	if(n==0)
+	{
+		return 1;
+	}
+	else
+	{
+		for(i=1;i<=a;i++)
+		{
+			b=b*n;
+		}
+		return b;
+	}
+}
+
+int hexa(int a)
+{
+	int b=0,n=0;
+	while(a!=0)
+	{
+		b=b+((a%10)*(power(n,16)));
+		a=a/10;
+		n++;
+	}
+	return b;
+}
+
+
+main()
+{
+	int stadf,i,j,flag,pgmlngth,flag1,flagst,k=0,flag2,byt,resolv1,resolv2,ini=0,flag3,flag4=0,t,s=0,l=0,locctr,stad1,temo,temoo;
+	char str[50],str1[50],strsp[50],str2[50],strop[10],temp[50],stad[50],tmpstr[50],str3[50],counter=0,zero4[50],zero5[50];
+	strcpy(zero4,"0000");
+	strcpy(zero5,"00000");
+	fp=fopen("SIC.txt","r");
+	fp1=fopen("intermediate.txt","w+");
+	fp2=fopen("symtab.txt","w+");
+	fp3=fopen("optab.txt","w+");
+	fp4=fopen("objpgm.txt","w+");
+	
+	fscanf(fp,"%s",str);
+	if(strcmp(str,"START")==0)
+	{
+		fprintf(fp1,"%s\t",str);
+		fscanf(fp,"%s",str);
+		temo=atoi(str);
+		temoo=hexa(temo);
+		fprintf(fp1,"%s\n",str);
+		strcpy(stad,str);
+		stad1=temoo;
+		flagst=1;
+	}
+	fprintf(fp4,"\n");
+	head[h++]='H';
+	head[h++]='^';
+	if(flagst!=0)
+	{
+		//fprintf(fp4,"%s",stad);
+		fscanf(fp,"%s",str);
+	}
+	else
+	{
+		//fprintf(fp4,"000000 ^ ");
+		strcpy(stad,"000000");
+	}
+	for(i=0;i<strlen(stad);i++)
+	{
+		head[h++]=stad[i];
+	}
+	//printf("\nstart%d\n",atoi(stad));
+	head[h++]='^';
+	head[h]='\0';
+	fprintf(fp1,"%s\t",stad);
+	//printf("%s\n%s\n",stad,str);
+	fprintf(fp4,"\nT^");
+	locctr=stad1;
+	fprintf(fp4,"%X^",locctr);
+	stadf=hexa(atoi(stad));
+	
+	while(!feof(fp))
+	{
+			flag1=flag2=flag3=0;
+			//printf("%s\n",str);
+			a1:
+			if(flag4!=0)
+			{
+				fprintf(fp4,"0%X^",(3*ini));
+                                for(i=0;i<ab;i++)
+                                {
+                                        fprintf(fp4,"%s",a[i]);
+					if(ba[i]==0)
+					{
+                                        	fprintf(fp4,"%X000^",ba[i]);
+					}
+					else
+					{
+						fprintf(fp4,"%X^",ba[i]);
+					}
+                                }
+				fprintf(fp4,"\n");
+                                ini=b=ab=0;
+				flag4=0;
+				fprintf(fp4,"T^%X^03^%X",resolv1,resolv2);
+				fprintf(fp4,"\n");
+				fprintf(fp4,"T^%X^",locctr);
+			}
+			fp5=fopen("validop.txt","r");
+			while(!feof(fp5))
+			{
+				fscanf(fp5,"%s",str3);
+				if(strcmp(str,str3)==0)
+				{
+					//fprintf(fp3,"%s\t",str3);
+					fscanf(fp5,"%s",str3);
+					//fprintf(fp3,"%s\n",str3);
+					flag1=1;
+					break;
+				}
+			}
+			fclose(fp5);
+			if(flag1!=0)
+			{
+				for(i=0;i<o;i++)
+				{
+					if(strcmp(str,op[i].opc)==0)
+					{
+						flagsp1=1;
+					}
+				}
+				if(flagsp1!=1)
+				{
+					strcpy(op[o].opc,str);
+					strcpy(op[o].value,str3);
+					o++;
+				}
+				flagsp1=0;
+			}	
+			for(i=0;i<s;i++)
+			{
+				if(strcmp(str,sym[i].symbol)==0)
+				{
+					if(sym[i].address=32768)
+					{
+						fprintf(fp1,"%s\t",str);
+						flag4=1;
+						resolv2=locctr;
+						sym[i].address=locctr;
+						sym[i].frl=0;
+						fscanf(fp,"%s",str);
+						goto a1;
+					}
+					else
+					{
+						sym[i].flag++;
+						flag2=1;
+					}
+				}
+			}
+			counter++;
+			//printf("%d\n",counter);
+			if(strcmp(str,"END")==0)
+			{
+                                //printf("%s\n",str);
+                                fprintf(fp1,"%s\t",str);
+                                fscanf(fp,"%s",str);
+                                fprintf(fp1,"%s\n",str);
+				//printf("%d\n",ini);
+                                fprintf(fp4,"0%X^",(3*ini));
+                                for(i=0;i<ab;i++)
+                                {
+                                        fprintf(fp4,"%s",a[i]);
+                                        fprintf(fp4,"%X^",ba[i]);
+                                }
+				fprintf(fp4,"\nE");
+                                ini=b=ab=0;
+				break;
+                        }
+			else if((flag1!=1)&&(flag2!=1))
+			{	
+				fprintf(fp1,"%s\t",str);
+				strcpy(sym[s].symbol,str);
+				sym[s].address=locctr;
+				sym[s].flag=0;
+				s++;
+				fscanf(fp,"%s",str);
+				fprintf(fp1,"%s\t",str);
+				if(strcmp(str,"WORD")==0)
+				{
+					//printf("%s\n",str);
+					ini=ini+3;
+					locctr=locctr+3;
+					fscanf(fp,"%s",str);
+					fprintf(fp1,"%s\t",str);
+					t=atoi(str);
+					if(t>15)
+					{
+						strcat(zero4,str);
+						printf("%s\t",zero4);
+						strcpy(a[ab++],zero4);
+						printf("%s\n\n",a[ab-1]);
+						strcpy(zero4,"0000");
+					}
+					else
+					{
+						strcat(zero5,str);
+						printf("%s\t",zero5);
+						strcpy(a[ab++],zero5);
+						printf("%s\n\n",a[ab-1]);
+						strcpy(zero5,"00000");
+					}
+					if(t>15)
+						fprintf(fp1,"0000%X",t);
+					else
+						fprintf(fp1,"00000%X",t);
+					fscanf(fp,"%s",str);
+				}
+				if(strcmp(str,"BYTE")==0)
+				{
+					//printf("%s\n",str);
+					ini=ini+1;
+					locctr++;
+					fscanf(fp,"%s",str);
+					fprintf(fp1,"%s\t",str);
+					j=2;
+					while(str[j]!='`')
+					{
+						tmpstr[k++]=str[j];
+						fprintf(fp1,"%X",str[j++]);
+					}
+					//t=atoi(str);
+					tmpstr[k]='\0';
+					strcpy(a[ab++],tmpstr);
+					fscanf(fp,"%s",str);
+					k=j=0;
+				}
+				if(strcmp(str,"RESB")==0)
+				{
+					//printf("%s\n",str);
+					if(ab!=0)
+					{
+						if(ini>15)
+							fprintf(fp4,"%X^",ini);
+						else
+							fprintf(fp4,"0%X^",ini);
+						for(i=0;i<ab;i++)
+                                        	{
+                                                	//printf("%c\n",a[i][0]);
+                                                	if(!isalpha(a[i][0]))
+                                                	{
+                                                        	fprintf(fp4,"%s^",a[i]);
+                                                	}
+                                                	else
+                                                	{
+                                                        	for(j=0;j<strlen(a[i]);j++)
+                                                        	{
+                                                                	fprintf(fp4,"%X",a[i][j]);
+                                                        	}
+                                                        	fprintf(fp4,"^");
+                                                	}
+						}
+						ab=0;
+					}
+					ini=0;
+					//fprintf(fp4,"%X\n",atoi(a[i]));
+					fscanf(fp,"%s",str);
+					fprintf(fp1,"%s",str);
+					locctr=locctr+(atoi(str));
+					//ini=ini+locctr;	
+					fscanf(fp,"%s",str);
+					//printf("\nbooga\t%s\n",str);
+					fp5=fopen("validop.txt","r");
+					while(!feof(fp5))
+					{
+						fscanf(fp5,"%s",strsp);
+						if(strcmp(strsp,str)==0)
+						{
+							flagsp=1;
+							break;
+						}
+					}
+					fclose(fp5);
+					if(flagsp==0)
+					{
+						fprintf(fp4,"\nT^%X^",locctr);
+						flagsp=0;
+					}
+				}	
+				if(strcmp(str,"RESW")==0)
+				{
+					//printf("%X\n",ini);
+					if(ab!=0)
+					{
+						if(ini>15)
+							fprintf(fp4,"%X^",ini);
+						else
+							fprintf(fp4,"0%X^",ini);
+						for(i=0;i<ab;i++)
+                                		{
+							//printf("%c\n",a[i][0]);
+							if(!isalpha(a[i][0]))
+							{
+                                        			fprintf(fp4,"%s^",(a[i]));
+							}
+							else
+							{
+								for(j=0;j<strlen(a[i]);j++)
+								{
+									fprintf(fp4,"%X",a[i][j]);
+								}
+								fprintf(fp4,"^");
+							}
+						}
+						ab=0;
+                                	}
+					ini=0;
+                                	//fprintf(fp4,"%X\n",atoi(a[i]));
+					fscanf(fp,"%s",str);
+					fprintf(fp1,"%s",str);
+					locctr=locctr+(3*(atoi(str)));
+					//ini=ini+locctr;
+					fscanf(fp,"%s",str);
+					fp5=fopen("validop.txt","r");
+                                        while(!feof(fp5))
+                                        {
+                                                fscanf(fp5,"%s",strsp);
+                                                if(strcmp(strsp,str)==0)
+                                                {
+                                                        flagsp=1;
+                                                        break;
+                                                }
+                                        }
+                                        fclose(fp5);
+                                        if(flagsp==0)
+                                        {
+                                                fprintf(fp4,"\nT^%X^",locctr);
+                                                flagsp=0;
+					}
+				}
+				fprintf(fp1,"\n");
+				fprintf(fp1,"%X\t",locctr);
+			}
+			else if(flag1!=0)
+			{
+				flag3=0;
+				//printf("hi...\n");
+				if(l==0)
+				{
+					/*fprintf(fp4,"\nT^%X^",locctr);
+					fprintf(fp4,"%X^",(3*ini));
+                                	for(i=0;i<ab;i++)
+                               		{
+                                       		fprintf(fp4,"%s",a[i]);
+                               		}
+                               		ini=b=ab=0;*/
+					if(ab!=0)
+                                        {
+						//printf("%d\nboom\n",ini);
+						if(ini>15)
+                                                	fprintf(fp4,"%X^",ini);
+						else
+							fprintf(fp4,"0%X^",ini);
+                                                for(i=0;i<ab;i++)
+                                                {
+                                                        //printf("%c\n",a[i][0]);
+                                                        if(!isalpha(a[i][0]))
+                                                        {
+                                                                fprintf(fp4,"%X^",atoi(a[i]));
+                                                        }
+                                                        else
+                                                        {
+                                                                for(j=0;j<strlen(a[i]);j++)
+                                                                {
+                                                                        fprintf(fp4,"%X",a[i][j]);
+                                                                }
+                                                                fprintf(fp4,"^");
+                                                        }
+                                                }
+                                                ab=0;
+                                        }
+                                        ini=0;
+					fprintf(fp4,"\nT^%X^",locctr);
+
+				}
+				locctr=locctr+3;
+				ini=ini+1;
+				fprintf(fp1,"%s\t",str);
+				strcpy(a[ab++],str3);
+				fscanf(fp,"%s",str);
+				fprintf(fp1,"%s\t",str);
+				fprintf(fp1,"%s",str3);	
+				for(i=0;i<s;i++)
+				{
+					if(strcmp(str,sym[i].symbol)==0)
+					{
+						fprintf(fp1,"%X\n",sym[i].address);
+						ba[b++]=sym[i].address;
+						flag3=1;
+					}
+				}
+				if(flag3!=1)
+				{	
+					strcpy(sym[s].symbol,str);
+					sym[s].address=32768;
+					sym[s].frl=(locctr-3)+1;
+					//printf("%X\n",sym[s].frl);
+					resolv1=sym[s].frl;
+					sym[s].flag=0;
+					s++;
+					fprintf(fp1,"----\n");
+					ba[b++]=0;
+					printf("Symbol\tAddress\tFlag\tFRL\n");
+					for(i=0;i<s-1;i++)
+					{
+							printf("%s\t%X\t%d\n",sym[i].symbol,sym[i].address,sym[i].flag);
+					}
+					printf("%s\t----\t%d\t%X\n\n",sym[s-1].symbol,sym[s-1].flag,sym[s-1].frl);
+				}
+				fprintf(fp1,"%X\t",locctr);
+				l++;
+				fscanf(fp,"%s",str);
+			}
+			/*else
+			{
+				printf("%s\n",str);
+				fprintf(fp1,"%s\t",str);
+				fscanf(fp1,"%s",str);
+				fprintf(fp1,"%s\n",str);
+				fprintf(fp4,"%X^",ini);
+				for(i=0;i<ab;i++)
+				{
+					fprintf(fp4,"%s",a[i]);
+					fprintf(fp4,"%X^",ba[i]);
+				}
+				ini=b=ab=0;
+			}*/
+			/*else
+			{
+				//printf("%s\n",str);
+				break;
+			}*/		
+	}
+	/*fprintf(fp4,"\nT ^ ");*/
+	fprintf(fp2,"Symbol\tAddress\tflag\tFRL\n");
+	for(i=0;i<s;i++)
+	{
+		fprintf(fp2,"%s\t%X\t%d\n",sym[i].symbol,sym[i].address,sym[i].flag);
+	}
+	for(i=0;i<o;i++)
+	{
+		fprintf(fp3,"%s\t%s\n",op[i].opc,op[i].value);
+	}
+	fclose(fp);
+	fclose(fp1);
+	fclose(fp2);
+	fclose(fp3);
+	fclose(fp4);
+	//printf("%X\n",locctr);
+	//printf("%X\n",stadf);
+	pgmlngth=locctr-stadf;
+	fp6=fopen("objpgmf.txt","w+");
+	fprintf(fp6,"%s",head);
+	fprintf(fp6,"%X\n",pgmlngth);
+	fp5=fopen("objpgm.txt","r");
+	while(!feof(fp5))
+	{
+		fgets(strfinal,500,fp5);
+		if(strfinal[(strlen(strfinal))-2]=='^')
+			strfinal[(strlen(strfinal))-2]='\0';
+		fputs(strfinal,fp6);
+		fprintf(fp6,"\n");
+		if(strcmp(strfinal,"E")==0)
+			break;
+	}
+	fclose(fp5);
+	fclose(fp6);
+	
+	/*for(i=0;i<s;i++)
+	{
+		printf("%s\t%X\t%d\n",sym[i].symbol,sym[i].address,sym[i].flag);
+	}*/
+
+}	
+
+	
+	
+	
